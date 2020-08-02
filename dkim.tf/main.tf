@@ -4,6 +4,12 @@ variable "fqdn" {
 variable "selector" {
 }
 
+variable "user" {
+}
+
+variable "group" {
+}
+
 variable "algorithm" {
   default = "rsa"
 }
@@ -24,6 +30,7 @@ resource "sys_shell_script" "dkim_key_ed25519" {
     (
       openssl genpkey -algorithm ed25519 -out ${var.selector}.private
       openssl pkey -outform DER -pubout -in ${var.selector}.private | tail -c +13 | base64 > ${var.selector}.public
+      chown ${var.user}:${var.group} ${var.selector}.private ${var.selector}.public
     ) >&2
 
     cat ${var.selector}.public

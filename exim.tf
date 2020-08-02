@@ -31,6 +31,8 @@ module "dkim_rsa" {
   fqdn      = var.fqdn
   algorithm = "rsa"
   selector  = var.selector_rsa
+  user      = "Debian-exim"
+  group     = "Debian-exim"
 }
 
 module "dkim_ed25519" {
@@ -38,6 +40,8 @@ module "dkim_ed25519" {
   fqdn      = var.fqdn
   algorithm = "ed25519"
   selector  = var.selector_ed25519
+  user      = "Debian-exim"
+  group     = "Debian-exim"
 }
 
 resource "sys_file" "exim_conf" {
@@ -128,56 +132,4 @@ resource "sys_systemd_unit" "exim" {
   }
   depends_on = [ sys_systemd_unit.exim4 ]
 }
-
-/*
-resource "sys_systemd_unit" "exim" {
-  name = "${local.unit_name}.service"
-  enable = false
-  restart_on = {
-    unit = sys_file.exim_service.id
-  }
-  depends_on = [ sys_systemd_unit.exim4 ]
-}
-
-module "exim_proxy_service" {
-  source    = "../sd-proxy.tf"
-  unit_name = local.unit_name
-  bind4     = "0.0.0.0"
-  bind6     = "[::]"
-  host4     = "$${HOST_${local.unit_name_un}4}"
-  host6     = "[$${HOST_${local.unit_name_un}6}]"
-  ports = {
-    smtp4 = [587, 1587]
-    smtp6 = [587, 1587]
-  }
-}
-
-resource "sys_file" "exim_proxy_service" {
-  filename = "/etc/systemd/system/${local.unit_name}-proxy.service"
-  content = <<EOF
-[Unit]
-Description=Exim socket-activated proxy
-Requires=addr@${local.unit_name}.service
-After=addr@${local.unit_name}.service
-
-[Service]
-EnvironmentFile=/run/addr/${local.unit_name}.env
-${module.exim_proxy_service.service}
-
-
-[Install]
-WantedBy=multi-user.target
-EOF
-}
-
-resource "sys_systemd_unit" "exim_proxy" {
-  name = "${local.unit_name}-proxy.service"
-  start = true
-  enable = true
-  restart_on = {
-    unit = sys_file.exim_proxy_service.id
-  }
-  depends_on = [ sys_systemd_unit.exim ]
-}
-*/
 
