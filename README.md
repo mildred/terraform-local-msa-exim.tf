@@ -7,6 +7,10 @@ will  not handle mail transfer or delivery on port 25, even for local delivery.
 This is enforced to ensure the most strict security and to run the MSA with the
 least priviledges.
 
+It's most useful for dealing with automatic e-mail submission from daemon
+processes. The lack of pluggable authentication makes it less than optimal for
+use of real e-mail accounts.
+
 Features include:
 
 - Running only on port 587

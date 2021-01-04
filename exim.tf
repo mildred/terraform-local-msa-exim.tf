@@ -94,6 +94,8 @@ resource "sys_file" "exim_service" {
 Description=EXIM Submission server
 After=network.target
 Conflicts=exim4.service
+Requires=${local.unit_name}.socket
+After=${local.unit_name}.socket
 
 [Service]
 User=Debian-exim
@@ -133,3 +135,21 @@ resource "sys_systemd_unit" "exim" {
   depends_on = [ sys_systemd_unit.exim4 ]
 }
 
+locals {
+  spf = "${var.fqdn}. TXT \"v=spf1 +a:${var.fqdn} -all\""
+}
+
+output "dkim_dns" {
+  value = [
+    module.dkim_rsa.dns,
+    module.dkim_ed25519.dns,
+  ]
+}
+
+output "dns" {
+  value = [
+    module.dkim_rsa.dns,
+    module.dkim_ed25519.dns,
+    local.spf,
+  ]
+}

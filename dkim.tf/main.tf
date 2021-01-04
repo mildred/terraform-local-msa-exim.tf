@@ -14,10 +14,6 @@ variable "algorithm" {
   default = "rsa"
 }
 
-variable "t" {
-  default = "y"
-}
-
 resource "sys_shell_script" "dkim_key_ed25519" {
   count = (var.algorithm == "ed25519" ? 1 : 0)
   working_directory = "/etc"
@@ -91,5 +87,5 @@ output "pubkey" {
 }
 
 output "dns" {
-  value = "${var.selector}._domainkey.${var.fqdn}. TXT \"v=DKIM1\\; t=${var.t}\\; k=${var.algorithm}\\; p=${data.sys_file.pubkey.content}\""
+  value = "${var.selector}._domainkey.${var.fqdn}. TXT \"v=DKIM1; k=${var.algorithm}; p=${chomp(data.sys_file.pubkey.content)}\""
 }
