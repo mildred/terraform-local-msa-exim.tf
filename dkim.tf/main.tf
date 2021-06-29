@@ -87,5 +87,9 @@ output "pubkey" {
 }
 
 output "dns" {
-  value = "${var.selector}._domainkey.${var.fqdn}. TXT \"v=DKIM1; k=${var.algorithm}; p=${chomp(data.sys_file.pubkey.content)}\""
+  value = "${var.selector}._domainkey.${var.fqdn}. IN TXT \"v=DKIM1; k=${var.algorithm}; p=${chomp(data.sys_file.pubkey.content)}\""
+}
+
+output "rel_dns" {
+  value = "${var.selector}._domainkey IN TXT \"v=DKIM1; k=${var.algorithm}; p=${chomp(data.sys_file.pubkey.content)}\""
 }
